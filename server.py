@@ -24,6 +24,8 @@ try:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind( (host, int(port)) )
 
+    print('Socket created, listening for connection...')
+
     #Listen with a backlog of 5
     sock.listen(1)
 
@@ -31,6 +33,7 @@ try:
     (conn, addr) = sock.accept()
 
     while True:
+        print('Connection made, waiting for msg')
         msg = conn.recv(1024);
 
         if msg:
