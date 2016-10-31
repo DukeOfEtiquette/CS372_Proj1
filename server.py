@@ -3,7 +3,10 @@ import sys
 import socket
 import signal
 
-print('hello')
+#Make sure usage is correct
+if(len(sys.argv) != 2):
+    print("usage: ./code.py port")
+    sys.exit(1)
 
 #Register signal and define signal function
 def signal_handler(signal, frame):
@@ -17,35 +20,45 @@ signal.signal(signal.SIGINT, signal_handler)
 
 #Use localhost and port# passed at cmd line
 host = '127.0.0.1'
-port = 9999 
+port = sys.argv[1] 
 
 try:
     #Open socket and bind to desired host and port
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind( (host, int(port)) )
 
-    print('Socket created, listening for connection...')
+    print('Socket created.')
 
     #Listen with a backlog of 5
     sock.listen(1)
 
-    #Accept a connect and store sock and addr
-    (conn, addr) = sock.accept()
-    print('Connection made, waiting for msg..')
-
     while True:
-        msg = conn.recv(1024);
 
-        if msg:
-            print(msg.decode())
-            msg = input('ChatServer: ')
-            conn.send(msg.encode())
-            print('Message sent, waiting for response...')
-        elif msg == '###':
-            print('closing chat connection')
-            break
+        print('Listening for new connection...')
 
-    conn.close()
+        #Accept a connect and store sock and addr
+        (conn, addr) = sock.accept()
+        name = conn.recv(500)
+        name = name.decode()
+        print('Connection made with {0}, waiting for message...'.format(name))
+
+        #Constantly exchange messages with connection
+        while True:
+            print('{0}> '.format(name), end="", flush=True)
+            msg = conn.recv(500);
+
+            #If the message sent is to quit, then break out of while loop
+            if msg.decode() == '\\quit':
+                print('\n{0} has closed the connection.'.format(name))
+                break
+            #Else print message to screen and prompt for return message
+            elif msg:
+                print(msg.decode())
+                msg = input('ChatServer> ')
+                conn.send(msg.encode())
+
+        #Close the connection
+        conn.close()
 
 except Exception as err:
     #If things go a bit haywire, go ahead and let the user know that
