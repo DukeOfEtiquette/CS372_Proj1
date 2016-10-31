@@ -31,9 +31,9 @@ try:
 
     #Accept a connect and store sock and addr
     (conn, addr) = sock.accept()
+    print('Connection made, waiting for msg')
 
     while True:
-        print('Connection made, waiting for msg')
         msg = conn.recv(1024);
 
         if msg:
