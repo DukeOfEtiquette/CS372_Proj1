@@ -9,11 +9,13 @@
 #include <netdb.h>
 
 #define PORT_NUM 9999
+#define MSG_LEN 1024
 
 int main(int argc, char **argv)
 {
+    char rcvMsg[MSG_LEN], sndMsg[MSG_LEN];
     struct sockaddr_in servAddr;
-    std::string ip =  "127.0.0.1";
+    struct hostent *server;
 
     //Create the client socket
     int client = socket(AF_INET, SOCK_STREAM, 0);
@@ -31,6 +33,10 @@ int main(int argc, char **argv)
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(PORT_NUM);
 
+    server = gethostbyname("localhost");
+    bcopy((char *)server->h_addr, (char *)&servAddr.sin_addr.s_addr, server->h_length);
+
+
     int res = connect(client, (struct sockaddr *)&servAddr, sizeof(servAddr));
 
     if(res == 0)
@@ -40,6 +46,16 @@ int main(int argc, char **argv)
         close(client);
         return 1;
     }
+
+    std::cout << "Sending msg...\n";
+    char msg[] = "Hello server!";
+    write(client, msg, strlen(msg));
+
+    std::cout << "Receiving msg...\n";
+    bzero(rcvMsg, MSG_LEN);
+    recv(client, rcvMsg, MSG_LEN, 0);
+
+    std::cout << "Msg rcv'd: " << rcvMsg << std::endl;
 
     close(client);
 

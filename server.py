@@ -31,13 +31,16 @@ try:
 
     #Accept a connect and store sock and addr
     (conn, addr) = sock.accept()
-    print('Connection made, waiting for msg')
+    print('Connection made, waiting for msg..')
 
     while True:
         msg = conn.recv(1024);
 
         if msg:
-            print('msg received: {0}').format(msg)
+            print(msg.decode())
+            msg = input('ChatServer: ')
+            conn.send(msg.encode())
+            print('Message sent, waiting for response...')
         elif msg == '###':
             print('closing chat connection')
             break
