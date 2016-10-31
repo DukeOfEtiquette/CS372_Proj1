@@ -12,7 +12,7 @@
 
 int main(int argc, char **argv)
 {
-    struct sockaddr_in server_addr;
+    struct sockaddr_in servAddr;
     std::string ip =  "127.0.0.1";
 
     //Create the client socket
@@ -21,13 +21,25 @@ int main(int argc, char **argv)
     //Verify socket was created, print message to std with result
     if(client < 0)
     {
-        std::cout << "Error encountered while creating the client socket.\n";
+        std::cout << "ERROR: Unable to create client socket.\n";
         return 1;
     }else
     {
         std::cout << "Client socket created successfully.\n";
     }
 
+    servAddr.sin_family = AF_INET;
+    servAddr.sin_port = htons(PORT_NUM);
+
+    int res = connect(client, (struct sockaddr *)&servAddr, sizeof(servAddr));
+
+    if(res == 0)
+        std::cout << "Connection established on port number: " << PORT_NUM << std::endl;
+    else{
+        std::cout << "ERROR: Connection could not be established on port number: " << PORT_NUM << std::endl;
+        close(client);
+        return 1;
+    }
 
     close(client);
 
