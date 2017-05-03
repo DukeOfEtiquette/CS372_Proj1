@@ -87,14 +87,6 @@ int main(int argc, char **argv)
             return 0;
         }
 
-//        //Clear out buffer
-//        bzero(rcvMsg, MSG_LEN);
-
-        //Build message to send to chat server
-//        strcat(rcvMsg, usrName);
-//        strcat(rcvMsg, ": ");
-//        strcat(rcvMsg, sndMsg);
-
         //Send the message
         write(client, sndMsg, strlen(sndMsg));
         //write(client, rcvMsg, strlen(rcvMsg));
